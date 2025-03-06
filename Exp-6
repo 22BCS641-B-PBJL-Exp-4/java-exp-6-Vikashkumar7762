@@ -1,0 +1,96 @@
+1. Implementation/Code:
+▪ Setup Database
+CREATE DATABASE StudentDB;
+USE StudentDB;
+CREATE TABLE students ( id INT PRIMARY
+KEY AUTO_INCREMENT, name
+VARCHAR(100),
+age INT
+);
+▪ Code
+public class Student {
+private int id;
+private String name;
+private int age;
+public Student() {}
+public Student(int id, String name, int age)
+{ this.id = id; this.name = name; this.age
+= age;
+DEPARTMENT OF
+COMPUTER SCIENCE & ENGINEERING
+}
+public int getId() { return id; } public
+void setId(int id) { this.id = id; }
+public String getName() { return name; } public void
+setName(String name) { this.name = name; }
+public int getAge() { return age; } public void
+setAge(int age) { this.age = age; }
+@Override
+public String toString() {
+return "Student [ID=" + id + ", Name=" + name + ", Age=" + age + "]";
+}
+}
+▪ JDBC Operations
+import java.sql.*; import
+java.util.ArrayList;
+import java.util.List;
+public class StudentDAO {
+private static final String URL =
+"jdbc:mysql://localhost:3306/StudentDB"; private static final String
+USER = "root"; private static final String PASSWORD = "password";
+public Connection getConnection() throws SQLException {
+return DriverManager.getConnection(URL, USER, PASSWORD);
+}
+public void addStudent(Student student) {
+String query = "INSERT INTO students (name, age) VALUES (?, ?)"; try
+(Connection conn = getConnection();
+PreparedStatement stmt = conn.prepareStatement(query)) {
+stmt.setString(1,
+student.getName()); stmt.setInt(2,
+DEPARTMENT OF
+COMPUTER SCIENCE & ENGINEERING
+student.getAge());
+stmt.executeUpdate();
+} catch (SQLException e) {
+e.printStackTrace();
+}
+}
+public List<Student> getAllStudents() {
+List<Student> students = new ArrayList<>();
+String query = "SELECT * FROM students";
+try (Connection conn = getConnection();
+Statement stmt = conn.createStatement(); ResultSet
+rs = stmt.executeQuery(query)) {
+while (rs.next()) { students.add(new Student(rs.getInt("id"), rs.getString("name"),
+rs.getInt("age")));
+}
+} catch (SQLException e) {
+e.printStackTrace();
+}
+return students;
+}
+public void updateStudent(Student student) {
+String query = "UPDATE students SET name = ?, age = ? WHERE id = ?"; try
+(Connection conn = getConnection();
+PreparedStatement stmt = conn.prepareStatement(query)) {
+stmt.setString(1,
+student.getName()); stmt.setInt(2,
+student.getAge()); stmt.setInt(3,
+student.getId());
+stmt.executeUpdate();
+} catch (SQLException e) {
+e.printStackTrace();
+}
+}
+public void deleteStudent(int id) {
+DEPARTMENT OF
+COMPUTER SCIENCE & ENGINEERING
+String query = "DELETE FROM students WHERE id = ?"; try
+(Connection conn = getConnection();
+PreparedStatement stmt = conn.prepareStatement(query)) {
+stmt.setInt(1, id); stmt.executeUpdate();
+} catch (SQLException e) {
+e.printStackTrace();
+}
+}
+}
